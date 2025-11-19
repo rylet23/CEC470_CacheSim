@@ -14,13 +14,15 @@ class AddressDecoder:
         return tag, index, offset
 
 class Heir:
-    def __init__(self, l1_size=32, l2_size=128, l3_size=512, policy="LRU", block_size=1):
+    def __init__(self, l1_size=32, l2_size=128, l3_size=512, policy="LRU", block_size=1,
+                 mapping_type="fully_associative", num_sets=None):
         # print("heir")
         self.policy = policy
+        self.mapping_type = mapping_type
 
-        self.l1 = Level("L1", l1_size, policy=self.policy)
-        self.l2 = Level("L2", l2_size, policy=self.policy)
-        self.l3 = Level("L3", l3_size, policy=self.policy)
+        self.l1 = Level("L1", l1_size, policy=self.policy, mapping_type=mapping_type, num_sets=num_sets)
+        self.l2 = Level("L2", l2_size, policy=self.policy, mapping_type=mapping_type, num_sets=num_sets)
+        self.l3 = Level("L3", l3_size, policy=self.policy, mapping_type=mapping_type, num_sets=num_sets)
 
         self.decoder = AddressDecoder(num_sets=1, block_size=block_size)
 
@@ -96,29 +98,36 @@ class Heir:
         for lvl in [self.l1, self.l2, self.l3]:
             s = lvl.stats()
             print(f"{s['name']}:")
-            print(f"Capacity:{s['capacity']}")
-            print(f"Policy:{s['policy']}")
-            print(f"Accesses:{s['accesses']}")
-            print(f"Hits:{s['hits']}")
-            print(f"Misses:{s['misses']}")
-            print(f"Hit rate:{s['hit_rate'] * 100:.2f}%")
-        print(f"\nMain memory accesses:{self.main_memory_accesses}")
-        print(f"Total accesses:{self.total_accesses}")
-        print(f"Total cycles:{self.total_cycles}")
-        print(f"AMAT:{self._compute_amat():.2f}")
+            print(f"  Capacity: {s['capacity']}")
+            print(f"  Policy: {s['policy']}")
+            print(f"  Mapping: {s['mapping_type']}")
+            print(f"  Sets: {s['num_sets']}, Ways/Set: {s['ways_per_set']}")
+            print(f"  Accesses: {s['accesses']}")
+            print(f"  Hits: {s['hits']}")
+            print(f"  Misses: {s['misses']}")
+            print(f"  Hit rate: {s['hit_rate'] * 100:.2f}%")
+        print(f"\nMain memory accesses: {self.main_memory_accesses}")
+        print(f"Total accesses: {self.total_accesses}")
+        print(f"Total cycles: {self.total_cycles}")
+        print(f"AMAT: {self._compute_amat():.2f}")
 
     def export_csv(self, filename="results.csv"):
         amat = self._compute_amat()
         with open(filename, "w", newline="") as f:
             writer = csv.writer(f)
-            writer.writerow(["level", "capacity", "policy","accesses", "hits", "misses", "hit_rate","total_accesses_overall", "main_memory_accesses", "total_cycles", "AMAT"])
+            writer.writerow(["level", "capacity", "policy", "mapping_type", "num_sets", "ways_per_set",
+                           "accesses", "hits", "misses", "hit_rate", "total_accesses_overall",
+                           "main_memory_accesses", "total_cycles", "AMAT"])
             for lvl in [self.l1, self.l2, self.l3]:
                 s = lvl.stats()
-                
+
                 writer.writerow([
                     s["name"],
                     s["capacity"],
                     s["policy"],
+                    s["mapping_type"],
+                    s["num_sets"],
+                    s["ways_per_set"],
                     s["accesses"],
                     s["hits"],
                     s["misses"],

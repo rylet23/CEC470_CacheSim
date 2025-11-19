@@ -1,0 +1,4 @@
+level,capacity,policy,mapping_type,num_sets,ways_per_set,accesses,hits,misses,hit_rate,total_accesses_overall,main_memory_accesses,total_cycles,AMAT
+L1,32,LRU,set_associative,32,1,1471,1215,256,0.8260,10000,256,171145,17.1145
+L2,128,LRU,set_associative,40,3,4460,4204,256,0.9426,10000,256,171145,17.1145
+L3,512,LRU,set_associative,40,12,4581,4325,256,0.9441,10000,256,171145,17.1145

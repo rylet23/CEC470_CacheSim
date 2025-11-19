@@ -26,12 +26,40 @@ def run_cli():
         print("Trace file cleared. Nothing to simulate yet.")
         return
 
+    # Get cache configuration
+    print("\nCache Configuration:")
+    print("Available mapping types:")
+    print("  1. Direct Mapped")
+    print("  2. Fully Associative")
+    print("  3. Set Associative")
+
+    mapping_choice = input("Select mapping type (1/2/3) [default: 2]: ").strip()
+    if mapping_choice == '1':
+        mapping_type = "direct_mapped"
+        num_sets = None
+    elif mapping_choice == '3':
+        mapping_type = "set_associative"
+        num_sets_input = input("Enter number of sets [default: 4]: ").strip()
+        try:
+            num_sets = int(num_sets_input) if num_sets_input else 4
+            if num_sets <= 0:
+                print("Invalid number of sets. Using default: 4")
+                num_sets = 4
+        except ValueError:
+            print("Invalid input. Using default: 4")
+            num_sets = 4
+    else:
+        mapping_type = "fully_associative"
+        num_sets = None
+
     hierarchy = Heir(
         l1_size=32,
         l2_size=128,
         l3_size=512,
         policy="LRU",
-        block_size=1
+        block_size=1,
+        mapping_type=mapping_type,
+        num_sets=num_sets
     )
 
     try:
