@@ -7,4 +7,4 @@ This program simulates a full 3-level CPU cache (L1, L2, L3) and shows how diffe
 It includes both a console mode and a simple GUI so you can generate traces, run the simulator, and view stats :/
 
 To run: python3 main.py then input whatever it asks of you and it'll simulate. 
-<img width="1392" height="1187" alt="image" src="https://github.com/user-attachments/assets/f11785ed-daf4-4be1-8afb-fbedea9f4ba7" />
+<img width="630" height="645" alt="Screenshot 2025-11-19 at 10 21 00 AM" src="https://github.com/user-attachments/assets/2a507560-a34d-4432-88df-501e66d32272" />
