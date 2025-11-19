@@ -47,19 +47,39 @@ class CacheSimGUI:
         policy_combo = ttk.Combobox(main_frame, textvariable=self.policy_var, values=["FIFO", "LRU", "RANDOM", "LFU"], width=10,state="readonly")
         policy_combo.grid(row=3, column=1, sticky="w")
 
+        ttk.Label(main_frame, text="Mapping Type:").grid(row=4, column=0, sticky="w")
+        self.mapping_var = tk.StringVar(value="fully_associative")
+        mapping_combo = ttk.Combobox(main_frame, textvariable=self.mapping_var,
+                                     values=["direct_mapped", "fully_associative", "set_associative"],
+                                     width=20, state="readonly")
+        mapping_combo.grid(row=4, column=1, sticky="w")
+        mapping_combo.bind("<<ComboboxSelected>>", self.on_mapping_change)
+
+        ttk.Label(main_frame, text="Num Sets (for set-assoc):").grid(row=5, column=0, sticky="w")
+        self.num_sets_var = tk.StringVar(value="4")
+        self.num_sets_entry = ttk.Entry(main_frame, textvariable=self.num_sets_var, width=10, state="disabled")
+        self.num_sets_entry.grid(row=5, column=1, sticky="w")
+
         button_frame = ttk.Frame(main_frame)
-        button_frame.grid(row=4, column=0, columnspan=2, pady=(10, 5), sticky="w")
+        button_frame.grid(row=6, column=0, columnspan=2, pady=(10, 5), sticky="w")
 
         ttk.Button(button_frame, text="Generate Trace", command=self.on_generate).grid(row=0, column=0, padx=5)
         ttk.Button(button_frame, text="Clear Trace", command=self.on_clear).grid(row=0, column=1, padx=5)
         ttk.Button(button_frame, text="Simulate", command=self.on_run).grid(row=0, column=2, padx=5)
 
         self.output = tk.Text(main_frame, width=70, height=20)
-        self.output.grid(row=5, column=0, columnspan=2, pady=(10, 0))
+        self.output.grid(row=7, column=0, columnspan=2, pady=(10, 0))
         self.root.rowconfigure(0, weight=1)
         self.root.columnconfigure(0, weight=1)
-        main_frame.rowconfigure(5, weight=1)
+        main_frame.rowconfigure(7, weight=1)
         main_frame.columnconfigure(1, weight=1)
+
+    def on_mapping_change(self, event=None):
+        """Enable/disable num_sets entry based on mapping type"""
+        if self.mapping_var.get() == "set_associative":
+            self.num_sets_entry.config(state="normal")
+        else:
+            self.num_sets_entry.config(state="disabled")
 
     def on_generate(self):
         generate_trace()
@@ -75,13 +95,26 @@ class CacheSimGUI:
         # try:
         l1 = int(self.l1_var.get())
         l2 = int(self.l2_var.get())
-        
+
         l3 = int(self.l3_var.get())
         # except ValueError:
         #     messagebox.showerror("Error", "Cache sizes must be integers.")
         #     return
 
         policy = self.policy_var.get()
+        mapping_type = self.mapping_var.get()
+
+        # Get num_sets only if set_associative is selected
+        num_sets = None
+        if mapping_type == "set_associative":
+            try:
+                num_sets = int(self.num_sets_var.get())
+                if num_sets <= 0:
+                    messagebox.showerror("Error", "Number of sets must be positive.")
+                    return
+            except ValueError:
+                messagebox.showerror("Error", "Number of sets must be an integer.")
+                return
 
         try:
             blocks = load_trace("TraceFile.txt")
@@ -98,7 +131,9 @@ class CacheSimGUI:
             l2_size=l2,
             l3_size=l3,
             policy=policy,
-            block_size=1
+            block_size=1,
+            mapping_type=mapping_type,
+            num_sets=num_sets
         )
 
         for b in blocks:
