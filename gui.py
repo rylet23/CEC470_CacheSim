@@ -4,6 +4,7 @@ from io import StringIO
 from contextlib import redirect_stdout
 from heirarchy import Heir
 from GenTrace import generate_trace, remove_trace
+from graph_stats import generate_all_graphs
 
 def load_trace(filename):
     blocks = []
@@ -66,6 +67,7 @@ class CacheSimGUI:
         ttk.Button(button_frame, text="Generate Trace", command=self.on_generate).grid(row=0, column=0, padx=5)
         ttk.Button(button_frame, text="Clear Trace", command=self.on_clear).grid(row=0, column=1, padx=5)
         ttk.Button(button_frame, text="Simulate", command=self.on_run).grid(row=0, column=2, padx=5)
+        ttk.Button(button_frame, text="Generate Graphs", command=self.on_generate_graphs).grid(row=0, column=3, padx=5)
 
         self.output = tk.Text(main_frame, width=70, height=20)
         self.output.grid(row=7, column=0, columnspan=2, pady=(10, 0))
@@ -149,6 +151,30 @@ class CacheSimGUI:
 
         hierarchy.export_csv("results_gui.csv")
         self.output.insert(tk.END, f"\n\nStats also exported to results_gui.csv")
+
+    def on_generate_graphs(self):
+        """Generate visualization graphs from the most recent simulation results"""
+        import os
+        if not os.path.exists("results_gui.csv"):
+            messagebox.showerror("Error", "No results found. Run a simulation first.")
+            return
+
+        try:
+            success = generate_all_graphs("results_gui.csv", output_dir="graphs")
+            if success:
+                messagebox.showinfo("Graphs Generated",
+                                  "Graphs have been successfully generated in the 'graphs/' directory!\n\n"
+                                  "Generated files:\n"
+                                  "  - hit_rate_comparison.png\n"
+                                  "  - hits_vs_misses.png\n"
+                                  "  - access_distribution.png\n"
+                                  "  - capacity_vs_hitrate.png\n"
+                                  "  - memory_access_distribution.png\n"
+                                  "  - performance_summary.png")
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to generate graphs:\n{str(e)}\n\n"
+                               "Make sure matplotlib is installed:\n"
+                               "pip install matplotlib")
 
 def run_gui():
     root = tk.Tk()

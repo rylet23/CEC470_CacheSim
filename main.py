@@ -1,6 +1,7 @@
 from heirarchy import Heir
 from GenTrace import generate_trace, remove_trace
 from gui import run_gui
+from graph_stats import generate_all_graphs
 
 def load_trace(filename):
     blocks = []
@@ -77,6 +78,16 @@ def run_cli():
 
     hierarchy.print_stats()
     hierarchy.export_csv("results.csv")
+
+    # Ask if user wants to generate graphs
+    graph_choice = input("\nGenerate visualization graphs? (y/n): ").strip().lower()
+    if graph_choice == 'y':
+        try:
+            generate_all_graphs("results.csv", output_dir="graphs")
+            print("\nYou can find the graphs in the 'graphs/' directory.")
+        except Exception as e:
+            print(f"\nError generating graphs: {e}")
+            print("Make sure matplotlib is installed: pip install matplotlib")
 
 def main():
     mode = input("Launch GUI? (y = GUI, n = console)\n").strip().lower()

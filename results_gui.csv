@@ -1,4 +1,4 @@
 level,capacity,policy,mapping_type,num_sets,ways_per_set,accesses,hits,misses,hit_rate,total_accesses_overall,main_memory_accesses,total_cycles,AMAT
-L1,64,RANDOM,set_associative,16,4,2650,2394,256,0.9034,10000,256,78750,7.8750
-L2,256,RANDOM,set_associative,16,16,7606,7350,256,0.9663,10000,256,78750,7.8750
-L3,512,RANDOM,set_associative,16,32,256,0,256,0.0000,10000,256,78750,7.8750
+L1,32,LRU,fully_associative,1,32,1493,1237,256,0.8285,10000,256,156895,15.6895
+L2,128,LRU,fully_associative,1,128,5145,4889,256,0.9502,10000,256,156895,15.6895
+L3,512,LRU,fully_associative,1,512,3874,3618,256,0.9339,10000,256,156895,15.6895
