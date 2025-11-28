@@ -1,1 +1,4 @@
-./graphs
+graphs/
+__pycache__/
+*.pyc
+cachevenv/
